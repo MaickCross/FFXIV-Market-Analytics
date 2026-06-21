@@ -13,13 +13,13 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
 def get_session() -> Generator[Session, None, None]:
-    """
-    Context manager de sessão para uso nos módulos ETL e scripts.
 
-    Uso:
-        with get_session() as db:
-            db.execute(...)
-    """
+    #Context manager de sessão para uso nos módulos ETL e scripts.
+
+    #Uso:
+    #    with get_session() as db:
+    #        db.execute(...)
+
     db = SessionLocal()
     try:
         yield db

@@ -1,22 +1,19 @@
-"""
-src/scheduler.py
 
-Orquestra o pipeline ETL completo e agenda execuções automáticas.
+#Comanda o pipeline ETL completo e agenda execuções automáticas.
 
-Fluxo de uma execução:
-  1. fetch_pipeline_context(db)   → lê item IDs, retainers e listagens ativas
-  2. extract(item_ids)            → busca dados da Universalis (async)
-  3. transform(...)               → converte dados brutos em registros tipados
-  4. load(db, result)             → persiste no banco
+#Fluxo de uma execução:
+#  1. fetch_pipeline_context(db)   > lê item IDs, retainers e listagens ativas
+#  2. extract(item_ids)            > busca dados da Universalis (async)
+#  3. transform(...)               > converte dados brutos em registros tipados
+#  4. load(db, result)             > persiste no banco
 
-O scheduler roda a primeira coleta imediatamente ao iniciar e depois
-repete a cada ETL_INTERVAL_HOURS (definido no .env, padrão: 1h).
-max_instances=1 garante que uma coleta em andamento não seja sobreposta
-pela próxima se o ETL demorar mais que o intervalo configurado.
+#O scheduler roda a primeira coleta imediatamente ao iniciar e depois
+#repete a cada ETL_INTERVAL_HOURS (definido no .env, padrão: 1h).
+#max_instances=1 garante que uma coleta em andamento não seja sobreposta
+#pela próxima se o ETL demorar mais que o intervalo configurado.
 
-Uso:
-    python src/scheduler.py
-"""
+#Uso: python src/scheduler.py
+
 
 import asyncio
 import logging
@@ -44,11 +41,11 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def run_etl_pipeline() -> None:
-    """
-    Executa uma coleta completa do mercado.
-    Chamada pelo scheduler a cada intervalo configurado.
-    Exceções são capturadas e logadas para não derrubar o scheduler.
-    """
+    
+    #Executa uma coleta completa do mercado.
+    #Chamada pelo scheduler a cada intervalo configurado.
+    #Exceções são capturadas e logadas para não derrubar o scheduler.
+    
     collected_at = datetime.now(tz=timezone.utc)
     log.info(f"{'='*55}")
     log.info(f"  ETL iniciado: {collected_at.strftime('%Y-%m-%d %H:%M:%S UTC')}")
@@ -115,7 +112,7 @@ def main() -> None:
             logging.StreamHandler(sys.stdout),
         ],
     )
-    # Reduz verbosidade do APScheduler e httpx
+    
     logging.getLogger("apscheduler").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)

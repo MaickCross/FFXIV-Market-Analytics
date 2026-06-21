@@ -1,12 +1,7 @@
-"""
-src/dashboard/queries.py
 
-Funções de consulta ao banco para o dashboard.
-Cada função retorna um pandas DataFrame já formatado para exibição,
-ou um dict de métricas simples para os cards de KPI.
-
-Sem lógica de apresentação aqui — apenas SQL + leve formatação de tipos.
-"""
+#Funções de consulta ao banco para o dashboard.
+#Cada função retorna um pandas DataFrame já formatado para exibição,
+#ou um dict de métricas simples para os cards de KPI.
 
 import logging
 
@@ -23,7 +18,7 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def _query(sql: str, params: dict | None = None) -> list:
-    """Executa uma query e retorna as linhas. Gerencia a sessão internamente."""
+    #Executa uma query e retorna as linhas. Gerencia a sessão internamente.
     db = SessionLocal()
     try:
         rows = db.execute(text(sql), params or {}).fetchall()
@@ -36,7 +31,7 @@ def _query(sql: str, params: dict | None = None) -> list:
 
 
 def _fmt_gil(value) -> str:
-    """Formata um valor de gil para exibição compacta."""
+    #Formata um valor de gil para exibição compacta.
     if value is None:
         return "—"
     v = int(value)
@@ -50,16 +45,16 @@ def _fmt_gil(value) -> str:
 # ---------------------------------------------------------------------------
 
 def get_categories() -> list[str]:
-    """Retorna todas as categorias de itens cadastradas."""
+    #Retorna todas as categorias de itens cadastradas.
     rows = _query("SELECT name FROM item_category ORDER BY name")
     return [r[0] for r in rows]
 
 
 def get_top_items(days: int = 7, category: str | None = None) -> pd.DataFrame:
-    """
-    Top itens por rotatividade (gil/dia) no período especificado.
-    category=None retorna todas as categorias.
-    """
+
+    #Top itens por rotatividade (gil/dia) no período especificado.
+    #category=None retorna todas as categorias.
+
     rows = _query(
         """
         SELECT
@@ -112,10 +107,10 @@ def get_top_items(days: int = 7, category: str | None = None) -> pd.DataFrame:
 
 
 def get_price_history(item_id: int, days: int = 14) -> pd.DataFrame:
-    """
-    Histórico de snapshots de preço para um item específico.
-    Usado para o gráfico de tendência ao selecionar um item.
-    """
+
+    #Histórico de snapshots de preço para um item específico.
+    #Usado para o gráfico de tendência ao selecionar um item.
+
     rows = _query(
         """
         SELECT
@@ -140,7 +135,7 @@ def get_price_history(item_id: int, days: int = 14) -> pd.DataFrame:
 
 
 def get_last_collection() -> str:
-    """Retorna o timestamp da última coleta formatado para exibição."""
+    #Retorna o timestamp da última coleta formatado para exibição.
     rows = _query("SELECT MAX(collected_at) FROM market_snapshots")
     val = rows[0][0] if rows else None
     if not val:
@@ -149,7 +144,7 @@ def get_last_collection() -> str:
 
 
 def get_market_kpis(days: int = 7) -> dict:
-    """KPIs gerais do mercado para o período especificado."""
+    #KPIs gerais do mercado para o período especificado.
     rows = _query(
         """
         SELECT
@@ -176,7 +171,7 @@ def get_market_kpis(days: int = 7) -> dict:
 # ---------------------------------------------------------------------------
 
 def get_my_active_listings() -> pd.DataFrame:
-    """Todas as listagens ativas dos meus retainers."""
+    #Todas as listagens ativas dos meus retainers.
     rows = _query(
         """
         SELECT
@@ -208,7 +203,7 @@ def get_my_active_listings() -> pd.DataFrame:
 
 
 def get_my_sales(days: int = 30) -> pd.DataFrame:
-    """Histórico de vendas inferidas dos meus retainers."""
+    #Histórico de vendas inferidas dos meus retainers.
     rows = _query(
         """
         SELECT
@@ -243,7 +238,7 @@ def get_my_sales(days: int = 30) -> pd.DataFrame:
 
 
 def get_retainer_kpis(days: int = 30) -> dict:
-    """KPIs dos meus retainers para o período especificado."""
+    #KPIs dos meus retainers para o período especificado.
     rows_sales = _query(
         """
         SELECT

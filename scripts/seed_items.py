@@ -1,18 +1,13 @@
-#!/usr/bin/env python3
-"""
-scripts/seed_items.py
 
-Popula o catálogo de itens (item_category, item_subcategory, items)
-cruzando dados de duas fontes:
-  - Universalis API  →  lista de todos os IDs negociáveis no market board
-  - XIVAPI v2        →  nome, categoria, flag HQ, ícone de cada item
+#Popula o catálogo de itens (item_category, item_subcategory, items)
+#cruzando dados de duas fontes:
+#  - Universalis API > lista de todos os IDs de items negociáveis no market board
+#  - XIVAPI v2 > nome, categoria, flag HQ, ícone de cada item
 
-Seguro para re-executar: usa INSERT ... ON CONFLICT DO NOTHING em todas
-as tabelas — nunca duplica nem sobrescreve dados existentes.
+#Seguro para re-executar: usa INSERT ... ON CONFLICT DO NOTHING em todas
+#as tabelas — nunca duplica nem sobrescreve dados existentes.
 
-Uso:
-    python scripts/seed_items.py
-"""
+#Uso: python scripts/seed_items.py
 
 import asyncio
 import logging
@@ -56,8 +51,8 @@ CONCURRENCY  = 5     # chamadas paralelas simultâneas ao XIVAPI(max recomendado
 TIMEOUT      = 60.0  # segundos por requisição(minimo recomendado = 30)
 
 # ---------------------------------------------------------------------------
-# Mapeamento: ItemSearchCategory.Name → categoria principal (nossa)
-# Itens não listados aqui caem automaticamente em "Items"
+# Mapeamento: ItemSearchCategory.Name > categoria principal (nossa)
+# Itens não listados aqui caem automaticamente em "Items" (vou mudar isso depois)
 # ---------------------------------------------------------------------------
 CATEGORY_MAP: dict[str, str] = {
     # --- Main Arm / Off Arm ---
@@ -158,7 +153,7 @@ async def _fetch_batch(
     batch_index: int,
     total_batches: int,
 ) -> list[dict]:
-    """Busca um lote de itens no XIVAPI v2 usando o parâmetro `rows`."""
+
     async with semaphore:
         resp = await client.get(
             f"{XIVAPI_BASE}/api/sheet/Item",
@@ -173,7 +168,7 @@ async def _fetch_batch(
 
 
 async def fetch_all_item_metadata(item_ids: list[int]) -> list[dict]:
-    """Divide os IDs em lotes e busca todos em paralelo no XIVAPI v2."""
+
     batches = [item_ids[i: i + BATCH_SIZE] for i in range(0, len(item_ids), BATCH_SIZE)]
     total = len(batches)
     log.info(f"Buscando metadados de {len(item_ids):,} itens em {total} lotes no XIVAPI v2...")
@@ -200,11 +195,11 @@ async def fetch_all_item_metadata(item_ids: list[int]) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def _build_icon_url(icon_field: dict | None) -> str | None:
-    """
-    Constrói a URL pública do ícone a partir do campo Icon retornado pelo XIVAPI v2.
-    Exemplo de path_hr1: 'ui/icon/055000/055487_hr1.tex'
-    URL final: https://v2.xivapi.com/api/asset?path=ui/icon/...&format=png
-    """
+
+    #Constrói a URL pública do ícone a partir do campo Icon retornado pelo XIVAPI v2.
+    #Exemplo de path_hr1: 'ui/icon/055000/055487_hr1.tex'
+    #URL final: https://v2.xivapi.com/api/asset?path=ui/icon/...&format=png
+
     if not icon_field or not isinstance(icon_field, dict):
         return None
     path = icon_field.get("path_hr1") or icon_field.get("path")
@@ -214,10 +209,7 @@ def _build_icon_url(icon_field: dict | None) -> str | None:
 
 
 def parse_item_row(row: dict) -> dict | None:
-    """
-    Converte uma linha bruta do XIVAPI em dict pronto para o banco.
-    Retorna None se o item deve ser ignorado (sem nome, não negociável).
-    """
+
     item_id: int | None = row.get("row_id")
     fields: dict = row.get("fields", {})
 
@@ -265,11 +257,9 @@ def parse_item_row(row: dict) -> dict | None:
 # ---------------------------------------------------------------------------
 
 def seed_database(parsed_items: list[dict]) -> None:
-    """
-    Insere categorias, subcategorias e itens no banco de dados.
-    Usa INSERT ... ON CONFLICT DO NOTHING em todas as etapas:
-    seguro para re-execução sem duplicatas.
-    """
+
+    #Insere categorias, subcategorias e itens no banco de dados.
+
     db = SessionLocal()
     try:
         _insert_categories(db, parsed_items)
@@ -327,7 +317,7 @@ def _insert_subcategories(db, items: list[dict], cat_id_map: dict[str, int]) -> 
 
 
 def _load_subcategory_map(db) -> dict[tuple[int, str], int]:
-    """Retorna {(category_id, subcat_name): subcat_id}."""
+    #Retorna {(category_id, subcat_name): subcat_id}.
     rows = db.execute(
         text("SELECT id, category_id, name FROM item_subcategory")
     ).fetchall()

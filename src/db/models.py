@@ -108,11 +108,11 @@ class MyRetainer(Base):
 
 
 class MarketSnapshot(Base):
-    """
-    Snapshot agregado do mercado por item, coletado a cada hora.
-    Guarda preço mínimo, médio e volume de listagens para NQ e HQ.
-    HQ = None quando o item não suporta versão high quality.
-    """
+
+    #Snapshot agregado do mercado por item, coletado a cada hora.
+    #Guarda preço mínimo, médio e volume de listagens para NQ e HQ.
+    #HQ = None quando o item nao tem high quality.
+
 
     __tablename__ = "market_snapshots"
     __table_args__ = (UniqueConstraint("item_id", "collected_at"),)
@@ -136,14 +136,13 @@ class MarketSnapshot(Base):
 
 
 class SaleHistory(Base):
-    """
-    Histórico de vendas concluídas no Behemoth.
-    Fonte: /api/v2/history/Behemoth/{item_id}
 
-    A UNIQUE CONSTRAINT em (item_id, sold_at, price_per_unit, quantity, is_hq, buyer_name)
-    garante que o ETL pode sempre tentar inserir sem verificar duplicatas —
-    o banco rejeita silenciosamente com ON CONFLICT DO NOTHING.
-    """
+    #Histórico de vendas concluídas no Behemoth.
+    #Fonte: /api/v2/history/Behemoth/{item_id}
+
+    #A UNIQUE CONSTRAINT em (item_id, sold_at, price_per_unit, quantity, is_hq, buyer_name)
+    #garante que o ETL pode sempre tentar inserir sem verificar duplicatas —
+    #o banco rejeita silenciosamente com ON CONFLICT DO NOTHING.
 
     __tablename__ = "sale_history"
     __table_args__ = (
@@ -181,15 +180,15 @@ class SaleHistory(Base):
 
 
 class MyActiveListing(Base):
-    """
-    Listagens ATIVAS dos retainers do jogador no momento da coleta.
 
-    first_seen_at: quando vimos essa listagem pela primeira vez.
-    last_seen_at:  última coleta em que ainda estava ativa.
+    #Listagens ATIVAS dos retainers do jogador no momento da coleta.
 
-    Quando last_seen_at para de ser atualizado → listagem sumiu.
-    O scheduler detecta isso e gera um registro em MyInferredSale.
-    """
+    #first_seen_at: quandoessa listagem foi vista pela primeira vez.
+    #last_seen_at:  última coleta em que ainda estava ativa.
+
+    #Quando last_seen_at para de ser atualizado → listagem sumiu.
+    #O scheduler detecta isso e gera um registro em MyInferredSale.
+
 
     __tablename__ = "my_active_listings"
     __table_args__ = (UniqueConstraint("retainer_id", "item_id", "is_hq"),)
@@ -219,10 +218,10 @@ class MyActiveListing(Base):
 
 
 class MyInferredSale(Base):
-    """
-    Venda inferida: quando uma listagem ativa desaparece entre dois snapshots.
-    listing_id mantém rastreabilidade — você sabe qual listagem originou a venda.
-    """
+
+    #Venda inferida: quando uma listagem ativa desaparece entre dois snapshots.
+    #listing_id mantém rastreabilidade — você sabe qual listagem originou a venda.
+
 
     __tablename__ = "my_inferred_sales"
 

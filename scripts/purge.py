@@ -1,14 +1,9 @@
-#!/usr/bin/env python3
-"""
-scripts/purge.py
 
-Remove dados mais antigos que o período de retenção configurado.
-Deve ser executado diariamente — pelo scheduler ou por um cron job externo.
-
-Uso:
-    python scripts/purge.py              # usa RETENTION_DAYS do .env
-    python scripts/purge.py --days 30   # sobrescreve o valor do .env
-"""
+# dados mais antigos que o período de retenção configurado.
+#Deve ser executado diariamente pelo scheduler ou por um cron job externo.
+#Uso:
+#    python scripts/purge.py | usa RETENTION_DAYS do .env
+#    python scripts/purge.py --days 30 | sobrescreve o valor do .env
 
 import argparse
 import logging

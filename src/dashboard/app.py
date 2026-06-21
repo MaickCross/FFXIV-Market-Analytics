@@ -1,16 +1,3 @@
-"""
-src/dashboard/app.py
-
-Dashboard interativo do FFXIV Market Tracker.
-
-Abas:
-  📊 Mercado     — top itens por rotatividade + gráfico de tendência de preço
-  🏪 Retainers   — listagens ativas + histórico de vendas dos meus retainers
-
-Uso:
-    python src/dashboard/app.py
-"""
-
 import sys
 from pathlib import Path
 
@@ -185,7 +172,7 @@ mercado_layout = html.Div([
         style_table={"overflowX": "auto"},
     ),
 
-    # Gráfico de tendência
+    # Gráfico
     html.Div([
         html.Hr(style={"borderColor": COLORS["border"], "marginTop": "24px"}),
         html.H6(id="chart-title", children="Selecione um item para ver a tendência de preço",
@@ -196,7 +183,7 @@ mercado_layout = html.Div([
 
 
 # ---------------------------------------------------------------------------
-# Layout — Aba Retainers
+# Layout — Aba de Retainers
 # ---------------------------------------------------------------------------
 
 retainers_layout = html.Div([
@@ -237,7 +224,7 @@ app.layout = dbc.Container([
     # Header
     dbc.Row([
         dbc.Col(
-            html.H4("🏰 FFXIV Market Tracker",
+            html.H4("FFXIV Market Analytics",
                     style={"color": COLORS["text"], "fontWeight": "700", "marginBottom": "0"}),
             width="auto",
         ),
